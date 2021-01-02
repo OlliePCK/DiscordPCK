@@ -42,7 +42,7 @@ function resetSent() {
 	return;
 }
 
-setInterval(resetSent, 43200000);
+setInterval(resetSent, 14400000);
 
 client.on('presenceUpdate', (oldPresence, newPresence) => {
 	console.log('Presence update detected');
