@@ -1,6 +1,6 @@
 module.exports.run = (message, args, client, queue) => {
 	const serverQueue = queue.get(message.guild.id);
-	if (!serverQueue || serverQueue.connection.dispatcher == null) {
+	if (!serverQueue || serverQueue.connection == null) {
 		return message.channel.send('There is no music currently playing!');
 	}
 	if(message.member.voice.channel != message.guild.me.voice.channel) {
