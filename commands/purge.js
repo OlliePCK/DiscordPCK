@@ -1,9 +1,12 @@
 module.exports = {
 	name: 'purge',
+	aliases: ['del', 'delete'],
 	desc: 'This is a command to purge a specified number of messages',
 	execute(message, args) {
 		const amount = parseInt(args[0]) + 1;
-
+		if (!message.member.hasPermission('ADMINISTRATOR')) {
+			return message.reply('You aren\'t an admin');
+		}
 		if (isNaN(amount)) {
 			return message.reply('That isn\'t a valid number <:Pepega:758867585738866719><a:Clap:758867584048693258>');
 		}

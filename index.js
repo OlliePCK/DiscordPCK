@@ -28,17 +28,19 @@ const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('
 
 for (const file of commandFiles) {
 	const command = require(`./commands/${file}`);
-	const commandName = command.config.name;
+	const commandName = command.name;
 	client.commands.set(commandName, command);
-	command.config.aliases.forEach(alias => {
-		client.aliases.set(alias, commandName);
-	});
+	if (command.aliases) {
+		command.aliases.forEach(alias => {
+			client.aliases.set(alias, commandName);
+		});
+	}
 }
 
 client.once('ready', async () => {
 	console.log('Ready!');
 	await resetSent();
-	gameExpose(client);
+	// gameExpose(client);
 	liveNoti(client);
 	setInterval(resetSent, 3600000);
 });
@@ -85,27 +87,6 @@ client.on('message', async (message) => {
 		message.reply('There was an error trying to execute that command!');
 	}
 
-	if (!client.commands.has(commandName)) {
-		if (commandName == 'play') {
-			execute(message, serverQueue);
-			return;
-		}
-		else if (commandName == 'stop') {
-			stop(message, serverQueue);
-			return;
-		}
-		else if (commandName == 'skip') {
-			skip(message, serverQueue);
-			return;
-		}
-		else if (commandName == 'pause') {
-			pause(serverQueue);
-			return;
-		}
-		else {
-			return;
-		}
-	}
 
 	async function execute(message, serverQueue) {
 		const vc = message.member.voice.channel;

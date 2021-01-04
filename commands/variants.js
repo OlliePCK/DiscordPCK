@@ -3,6 +3,7 @@
 module.exports = {
 	name: 'variants',
 	description: 'Provide shopify variant info',
+	aliases: ['vars', 'atc', 'shopify'],
 	execute(message, args) {
 		const fetch = require('node-fetch');
 		function validURL(str) {
