@@ -120,15 +120,29 @@ module.exports.run = async (message, args, client, queue, searcher) => {
 				serverQueue.songs.shift();
 				play(guild, serverQueue.songs[0]);
 			});
-		const dur = `${parseInt(serverQueue.songs[0].vLength / 60)}:${serverQueue.songs[0].vLength - 60 * parseInt(serverQueue.songs[0].vLength / 60)}`;
-		const msg = new Discord.MessageEmbed()
-			.setTitle('Now Playing')
-			.addField(serverQueue.songs[0].title, '______')
-			.addField('Song duration: ', dur)
-			.setThumbnail(serverQueue.songs[0].thumbnail)
-			.setColor('#00ffcc')
-			.setURL(serverQueue.songs[0].url);
-		return serverQueue.txtChannel.send(msg);
+		const seconds = song.vLength - 60 * parseInt(song.vLength / 60);
+		if (seconds.length == 1) {
+			const dur = `${parseInt(song.vLength / 60)}:0${seconds}`;
+			const msg = new Discord.MessageEmbed()
+				.setTitle('Now Playing')
+				.addField(song.title, '______')
+				.addField('Song duration: ', dur)
+				.setThumbnail(song.thumbnail)
+				.setColor('#00ffcc')
+				.setURL(serverQueue.songs[0].url);
+			return message.channel.send(msg);
+		}
+		else {
+			const dur = `${parseInt(song.vLength / 60)}:${seconds}`;
+			const msg = new Discord.MessageEmbed()
+				.setTitle('Now Playing')
+				.addField(song.title, '______')
+				.addField('Song duration: ', dur)
+				.setThumbnail(song.thumbnail)
+				.setColor('#00ffcc')
+				.setURL(serverQueue.songs[0].url);
+			return message.channel.send(msg);
+		}
 	}
 };
 
