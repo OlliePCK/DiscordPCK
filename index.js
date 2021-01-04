@@ -41,6 +41,13 @@ client.once('ready', async () => {
 	gameExpose(client);
 	liveNoti(client);
 	setInterval(resetSent, 3600000);
+	client.user.setStatus('available');
+	client.user.setPresence({
+		activity: {
+			name: 'thepck.com',
+			type: 'PLAYING',
+		},
+	});
 });
 
 async function resetSent() {
