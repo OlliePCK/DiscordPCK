@@ -4,13 +4,13 @@ const { general } = require('../config.json');
 
 module.exports = client => {
 	client.on('presenceUpdate', async (newPresence) => {
-		const userid = newPresence.user.id;
-		const username = newPresence.user.username;
-		const guild = newPresence.guild.id;
-		console.log('Presence update detected:');
-		console.log(`Guild ID: ${guild} \nUser ID: ${newPresence.user.id} \nUsername: ${username}`);
 		const act = newPresence.activities.find(activity => activity.timestamps != null);
 		if (act) {
+			const userid = newPresence.user.id;
+			const username = newPresence.user.username;
+			const guild = newPresence.guild.id;
+			console.log('Presence update detected:');
+			console.log(`Guild ID: ${guild} \nUser ID: ${newPresence.user.id} \nUsername: ${username}`);
 			const n = new Date();
 			const g = act.timestamps.start;
 			const hours = Math.abs(n - g) / 36e5;
