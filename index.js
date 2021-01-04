@@ -1,14 +1,14 @@
 const fs = require('fs');
 const Discord = require('discord.js');
+const { YTSearcher } = require('ytsearcher');
+const mongo = require('./mongo');
+
 const { prefix } = require('./config.json');
 const { api, token } = require('./keys.json');
-const { YTSearcher } = require('ytsearcher');
 
 const gameExpose = require('./presence_functions/game-expose');
 const liveNoti = require('./presence_functions/live-noti');
 
-
-const mongo = require('./mongo');
 const exposeSchema = require('./schemas/expose-schema');
 
 const searcher = new YTSearcher({
