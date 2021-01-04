@@ -3,7 +3,7 @@
 const fs = require('fs');
 const Discord = require('discord.js');
 const { prefix } = require('./config.json');
-// const { api, token } = require('./keys.json');
+const { api, token } = require('./keys.json');
 const ytdl = require('ytdl-core');
 const { YTSearcher } = require('ytsearcher');
 
@@ -14,7 +14,7 @@ const mongo = require('./mongo');
 const exposeSchema = require('./schemas/expose-schema');
 
 const searcher = new YTSearcher({
-	key: process.env.api,
+	key: api,
 	revealed: true,
 });
 
@@ -22,12 +22,17 @@ const queue = new Map();
 
 const client = new Discord.Client();
 client.commands = new Discord.Collection();
+client.aliases = new Discord.Collection();
 
 const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
 
 for (const file of commandFiles) {
 	const command = require(`./commands/${file}`);
-	client.commands.set(command.name, command);
+	const commandName = command.config.name;
+	client.commands.set(commandName, command);
+	command.config.aliases.forEach(alias => {
+		client.aliases.set(alias, commandName);
+	});
 }
 
 client.once('ready', async () => {
@@ -63,10 +68,22 @@ async function resetSent() {
 client.on('message', async (message) => {
 	if (!message.content.startsWith(prefix) || message.author.bot) return;
 
+	const serverQueue = queue.get(message.guild.id);
+
 	const args = message.content.slice(prefix.length).trim().split(/ +/);
 	const commandName = args.shift().toLowerCase();
 
-	const serverQueue = queue.get(message.guild.id);
+	const command = client.commands.get(commandName) || client.commands.get(client.aliases.get(commandName));
+
+	if (!command) {return;}
+
+	try {
+		command.execute(message, args, client);
+	}
+	catch (error) {
+		console.error(error);
+		message.reply('There was an error trying to execute that command!');
+	}
 
 	if (!client.commands.has(commandName)) {
 		if (commandName == 'play') {
@@ -175,17 +192,7 @@ client.on('message', async (message) => {
 		serverQueue.connection.dispatcher.pause();
 		message.channel.send('The song has been paused!');
 	}
-
-	const command = client.commands.get(commandName);
-
-	try {
-		command.execute(message, args, client);
-	}
-	catch (error) {
-		console.error(error);
-		message.reply('There was an error trying to execute that command!');
-	}
 });
 
 
-client.login(process.env.token);
+client.login(token);
