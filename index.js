@@ -2,15 +2,19 @@
 /* eslint-disable no-shadow */
 const fs = require('fs');
 const Discord = require('discord.js');
-const { prefix, live, general } = require('./config.json');
-const db = require('quick.db');
-const gameExpose = new db.table('gameExpose');
-const { executionAsyncResource } = require('async_hooks');
+const { prefix } = require('./config.json');
+const { api, token } = require('./keys.json');
 const ytdl = require('ytdl-core');
 const { YTSearcher } = require('ytsearcher');
 
+const gameExpose = require('./presence_functions/game-expose');
+const liveNoti = require('./presence_functions/live-noti');
+
+const mongo = require('./mongo');
+const exposeSchema = require('./schemas/expose-schema');
+
 const searcher = new YTSearcher({
-	key: process.env.YTapi,
+	key: api,
 	revealed: true,
 });
 
@@ -21,68 +25,39 @@ client.commands = new Discord.Collection();
 
 const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
 
-const d = new Date();
-
 for (const file of commandFiles) {
 	const command = require(`./commands/${file}`);
 	client.commands.set(command.name, command);
 }
 
-client.once('ready', () => {
+client.once('ready', async () => {
 	console.log('Ready!');
+	await resetSent();
+	gameExpose(client);
+	liveNoti(client);
+	setInterval(resetSent, 3600000);
 });
 
-function resetSent() {
-	const table = gameExpose.all();
-	const arrayLength = table.length;
-	// eslint-disable-next-line no-var
-	for (var i = 0; i < arrayLength; i++) {
-		gameExpose.set(table[i].ID, 'false');
-	}
-	return;
+async function resetSent() {
+	await mongo().then(async mongoose => {
+		try {
+			const res = await exposeSchema.updateMany(
+				{
+					sent: true,
+				},
+				{
+					sent: false,
+				},
+			);
+			const matched = await res.n;
+			const modded = await res.nModified;
+			console.log(`Reset ${modded} of ${matched} matches!`);
+		}
+		finally {
+			mongoose.connection.close();
+		}
+	});
 }
-
-setInterval(resetSent, 43200000);
-
-client.on('presenceUpdate', (oldPresence, newPresence) => {
-	console.log('Presence update detected');
-	const expName = newPresence.user.username.toString();
-	if (!gameExpose.get(expName)) {
-		gameExpose.set(expName, 'false');
-	}
-	if (gameExpose.get(expName) == 'false') {
-		if (newPresence.activities.find(activity => activity.timestamps)) {
-			const date = newPresence.activities.find(activity => activity.timestamps);
-			const n = d.getTime();
-			const g = date.timestamps.start.getTime();
-			const hours = Math.abs(n - g) / 36e5;
-			if (hours >= 4) {
-				gameExpose.set(expName, 'true');
-				console.log(`${newPresence.user.username} has been playing ${date.name} for ${Math.round(hours)} hours, time to wrap it the fuck up and go outside or get some sleep.`);
-				client.channels.cache.get(general).send(`${newPresence.user.username} has been playing ${date.name} for ${Math.round((hours) * 100) / 100} hours, time to wrap it the fuck up and go outside or get some sleep.`);
-			}
-		}
-	}
-	if (oldPresence == undefined) {
-		return;
-	}
-	const oldStreamingStatus = oldPresence.activities.find(activity => activity.type === 'STREAMING') ? true : false;
-	const newStreamingStatus = newPresence.activities.find(activity => activity.type === 'STREAMING') ? true : false;
-	const discName = newPresence.user.username;
-	if (newStreamingStatus === true && oldStreamingStatus === false) {
-		const streamURL = newPresence.activities.find(activity => activity.type === 'STREAMING').url;
-		console.log(`${discName}, just went live!`);
-		if (newPresence.user.id == '417114664783314945') {
-			return;
-		}
-		newPresence.member.roles.add('767677351412629505');
-		return client.channels.cache.get(live).send(`**${discName}** just went live! Watch: ${streamURL}`).catch(console.error);
-	}
-	else if (oldStreamingStatus === true && newStreamingStatus === false) {
-		newPresence.member.roles.remove('767677351412629505');
-		return console.log(`${discName}, just stopped streaming.`);
-	}
-});
 
 
 client.on('message', async (message) => {
@@ -128,7 +103,8 @@ client.on('message', async (message) => {
 			return message.channel.send('Please join a voice chat first');
 		}
 		else{
-			const result = await searcher.search(args.join(' '), { type: 'video' });
+			const query = args.join(' ') + ' audio';
+			const result = await searcher.search(query, { type: 'video' });
 			const songInfo = await ytdl.getInfo(result.first.url);
 
 			const song = {
@@ -151,6 +127,7 @@ client.on('message', async (message) => {
 
 				try{
 					const connection = await vc.join();
+					await connection.voice.setSelfDeaf(true);
 					queueConstructor.connection = connection;
 					play(message.guild, queueConstructor.songs[0]);
 				}
@@ -211,4 +188,4 @@ client.on('message', async (message) => {
 });
 
 
-client.login(process.env.token);
+client.login(token);
