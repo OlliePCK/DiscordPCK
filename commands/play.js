@@ -59,8 +59,6 @@ module.exports.run = async (message, args, client, queue, searcher) => {
 				songs: [],
 				volume: 10,
 				playing: true,
-				loopone: false,
-				loopall: false,
 			};
 			queue.set(message.guild.id, queueConstructor);
 
@@ -105,16 +103,7 @@ module.exports.run = async (message, args, client, queue, searcher) => {
 		const dispatcher = serverQueue.connection
 			.play(ytdl(song.url))
 			.on('finish', () =>{
-				if (serverQueue.loopone) {
-					play(guild, serverQueue.songs[0]);
-				}
-				else if (serverQueue.loopall) {
-					serverQueue.songs.push(serverQueue.songs[0]);
-					serverQueue.songs.shift();
-				}
-				else {
-					serverQueue.songs.shift();
-				}
+				serverQueue.songs.shift();
 				play(guild, serverQueue.songs[0]);
 			});
 		const dur = `${parseInt(serverQueue.songs[0].vLength / 60)}:${serverQueue.songs[0].vLength - 60 * parseInt(serverQueue.songs[0].vLength / 60)}`;
