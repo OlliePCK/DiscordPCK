@@ -1,4 +1,4 @@
-const { live } = require('../config.json');
+const { live, liverole } = require('../config.json');
 
 
 module.exports = client => {
@@ -12,14 +12,15 @@ module.exports = client => {
 		if (newStreamingStatus === true && oldStreamingStatus === false) {
 			const streamURL = newPresence.activities.find(activity => activity.type === 'STREAMING').url;
 			console.log(`${discName}, just went live!`);
+			// Blacklisted user who was spamming presence updates while live to stop noti spam.
 			if (newPresence.user.id == '417114664783314945') {
 				return;
 			}
-			newPresence.member.roles.add('767677351412629505');
+			newPresence.member.roles.add(liverole);
 			return client.channels.cache.get(live).send(`**${discName}** just went live! Watch: ${streamURL}`).catch(console.error);
 		}
 		else if (oldStreamingStatus === true && newStreamingStatus === false) {
-			newPresence.member.roles.remove('767677351412629505');
+			newPresence.member.roles.remove(liverole);
 			return console.log(`${discName}, just stopped streaming.`);
 		}
 	});
