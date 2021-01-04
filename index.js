@@ -14,7 +14,7 @@ const mongo = require('./mongo');
 const exposeSchema = require('./schemas/expose-schema');
 
 const searcher = new YTSearcher({
-	key: api,
+	key: process.env.api,
 	revealed: true,
 });
 
