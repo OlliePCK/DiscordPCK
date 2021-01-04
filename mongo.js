@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
-const { mongoPath } = require('./keys.json');
-// const mongoPath = process.env.mongodb;
+// const { mongoPath } = require('./keys.json');
+const mongoPath = process.env.mongodb;
 
 module.exports = async () => {
 	await mongoose.connect(mongoPath, {

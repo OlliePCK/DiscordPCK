@@ -4,7 +4,7 @@ const { YTSearcher } = require('ytsearcher');
 const mongo = require('./mongo');
 
 const { prefix } = require('./config.json');
-const { api, token } = require('./keys.json');
+// const { api, token } = require('./keys.json');
 
 const gameExpose = require('./presence_functions/game-expose');
 const liveNoti = require('./presence_functions/live-noti');
@@ -12,7 +12,7 @@ const liveNoti = require('./presence_functions/live-noti');
 const exposeSchema = require('./schemas/expose-schema');
 
 const searcher = new YTSearcher({
-	key: api,
+	key: process.env.api,
 	revealed: true,
 });
 
@@ -38,7 +38,7 @@ for (const file of commandFiles) {
 client.once('ready', async () => {
 	console.log('Ready!');
 	await resetSent();
-	// gameExpose(client);
+	gameExpose(client);
 	liveNoti(client);
 	setInterval(resetSent, 3600000);
 });
@@ -85,4 +85,4 @@ client.on('message', async (message) => {
 });
 
 
-client.login(token);
+client.login(process.env.token);
