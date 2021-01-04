@@ -3,7 +3,6 @@
 const fs = require('fs');
 const Discord = require('discord.js');
 const { prefix } = require('./config.json');
-const { api, token } = require('./keys.json');
 const ytdl = require('ytdl-core');
 const { YTSearcher } = require('ytsearcher');
 
@@ -14,7 +13,7 @@ const mongo = require('./mongo');
 const exposeSchema = require('./schemas/expose-schema');
 
 const searcher = new YTSearcher({
-	key: api,
+	key: process.env.api,
 	revealed: true,
 });
 
