@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const mongoPath = process.env.mogno;
+const mongoPath = process.env.mongodb;
 
 module.exports = async () => {
 	await mongoose.connect(mongoPath, {
