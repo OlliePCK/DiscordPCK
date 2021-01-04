@@ -3,7 +3,7 @@
 const fs = require('fs');
 const Discord = require('discord.js');
 const { prefix } = require('./config.json');
-const { api, token } = require('./keys.json');
+// const { api, token } = require('./keys.json');
 const ytdl = require('ytdl-core');
 const { YTSearcher } = require('ytsearcher');
 
