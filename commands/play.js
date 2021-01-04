@@ -33,29 +33,24 @@ module.exports.run = async (message, args, client, queue, searcher) => {
 	async function videoHandler(songInfo, message, vc, playlist = false) {
 		const serverQueue = queue.get(message.guild.id);
 		if(!args.length) {
-			if(!serverQueue.connection) {
+			if(!serverQueue) {
 				return message.channel.send('There is no music currently playing!');
 			}
 			if(!message.member.voice.channel) {
 				return message.channel.send('You are not in the voice channel!');
 			}
-			if(serverQueue.connection.dispatcher == null) {
-				const queueConstructor = {
-					txtChannel: message.channel,
-					vChannel: vc,
-					connection: null,
-					songs: [],
-					volume: 10,
-					playing: true,
-				};
-				queue.set(message.guild.id, queueConstructor);
+			if (serverQueue.connection.dispatcher != null) {
+				if(serverQueue.connection.dispatcher.resumed) {
+					return message.channel.send('The song is already playing!');
+				}
+				else {
+					serverQueue.connection.dispatcher.resume();
+					return message.channel.send('The song has been resumed!');
+				}
+			}
+			else if (serverQueue.connection.dispatcher == null) {
 				return message.channel.send('There is no music currently playing!');
 			}
-			if(serverQueue.connection.dispatcher.resumed) {
-				return message.channel.send('The song is already playing!');
-			}
-			serverQueue.connection.dispatcher.resume();
-			return message.channel.send('The song has been resumed!');
 		}
 		const song = {
 			title: songInfo.videoDetails.title,
