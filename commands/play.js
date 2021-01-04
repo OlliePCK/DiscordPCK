@@ -33,7 +33,16 @@ module.exports.run = async (message, args, client, queue, searcher) => {
 	async function videoHandler(songInfo, message, vc, playlist = false) {
 		const serverQueue = queue.get(message.guild.id);
 		if(!args.length) {
-			if(!serverQueue.connection) {
+			if(!serverQueue.connection || serverQueue.connection.dispatcher == null) {
+				const queueConstructor = {
+					txtChannel: message.channel,
+					vChannel: vc,
+					connection: null,
+					songs: [],
+					volume: 10,
+					playing: true,
+				};
+				queue.set(message.guild.id, queueConstructor);
 				return message.channel.send('There is no music currently playing!');
 			}
 			if(!message.member.voice.channel) {
