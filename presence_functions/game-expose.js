@@ -9,8 +9,8 @@ module.exports = client => {
 			const userid = newPresence.user.id;
 			const username = newPresence.user.username;
 			const guild = newPresence.guild.id;
-			console.log('Presence update detected:');
-			console.log(`Guild ID: ${guild} \nUser ID: ${newPresence.user.id} \nUsername: ${username}`);
+			console.log('Presence activity update detected:');
+			console.log(`Username: ${username}\nGuild ID: ${guild}\nUser ID: ${newPresence.user.id}`);
 			const n = new Date();
 			const g = act.timestamps.start;
 			const hours = Math.abs(n - g) / 36e5;
