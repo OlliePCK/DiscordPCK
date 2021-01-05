@@ -95,7 +95,7 @@ module.exports.run = async (message, args, client, queue, searcher) => {
 				.addField('Song duration: ', dur)
 				.setThumbnail(song.thumbnail)
 				.setColor('#00ffcc')
-				.setURL(serverQueue.songs[0].url);
+				.setURL(serverQueue.songs.url);
 			return message.channel.send(msg);
 		}
 	}
