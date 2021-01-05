@@ -1,9 +1,16 @@
 /* eslint-disable no-shadow */
 const ytdl = require('ytdl-core');
 const ytpl = require('ytpl');
+const { YTSearcher } = require('ytsearcher');
+// const { api } = require('../keys.json');
 const Discord = require('discord.js');
 
-module.exports.run = async (message, args, client, queue, searcher) => {
+const searcher = new YTSearcher({
+	key: process.env.api,
+	revealed: true,
+});
+
+module.exports.run = async (message, args, client, queue) => {
 	const vc = message.member.voice.channel;
 	if (!vc) {
 		return message.reply('You need to be in a voice channel to play music!');
@@ -95,7 +102,7 @@ module.exports.run = async (message, args, client, queue, searcher) => {
 				.addField('Song duration: ', dur)
 				.setThumbnail(song.thumbnail)
 				.setColor('#00ffcc')
-				.setURL(serverQueue.songs.url);
+				.setURL(song.url);
 			return message.channel.send(msg);
 		}
 	}

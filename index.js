@@ -1,20 +1,14 @@
 const fs = require('fs');
 const Discord = require('discord.js');
-const { YTSearcher } = require('ytsearcher');
 const mongo = require('./mongo');
 
 const { prefix } = require('./config.json');
-// const { api, token } = require('./keys.json');
+// const { token } = require('./keys.json');
 
 const gameExpose = require('./presence_functions/game-expose');
 const liveNoti = require('./presence_functions/live-noti');
 
 const exposeSchema = require('./schemas/expose-schema');
-
-const searcher = new YTSearcher({
-	key: process.env.api,
-	revealed: true,
-});
 
 const queue = new Map();
 
@@ -83,7 +77,7 @@ client.on('message', async (message) => {
 	if (!command) {return;}
 
 	try {
-		command.run(message, args, client, queue, searcher);
+		command.run(message, args, client, queue);
 	}
 	catch (err) {
 		console.error(err);
