@@ -17,6 +17,9 @@ module.exports = client => {
 				console.log(`Username: ${username}\nGuild ID: ${guild}\nUser ID: ${newPresence.user.id}`);
 				const n = new Date();
 				const g = act.timestamps.start;
+				if (g <= 0) {
+					return;
+				}
 				const hours = Math.abs(n - g) / 36e5;
 				if (hours >= 4) {
 					await mongo().then(async mongoose => {
