@@ -41,7 +41,7 @@ module.exports = client => {
 											upsert: true,
 										});
 										console.log(`${newPresence.user.username} has been playing ${act.name} for ${Math.round(hours)} hours.`);
-										if (newPresence.member.nickname == null) {
+										if (newPresence.member.nickname == null || newPresence.member.nickname == undefined) {
 											return client.channels.cache.get(general).send(`${newPresence.user.username} has been playing ${act.name} for ${Math.round((hours) * 100) / 100} hours.`);
 										}
 										else {
