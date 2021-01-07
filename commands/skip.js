@@ -3,7 +3,7 @@ module.exports.run = (message, args, client, queue) => {
 	if(message.member.voice.channel != message.guild.me.voice.channel) {
 		return message.channel.send('You need to join the voice chat and play a song first!');
 	}
-	if(!serverQueue) {
+	if(!serverQueue || serverQueue.connection.dispatcher == null) {
 		return message.channel.send('There is nothing to skip!');
 	}
 	serverQueue.connection.dispatcher.end();

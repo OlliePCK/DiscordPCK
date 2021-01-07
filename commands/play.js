@@ -106,7 +106,7 @@ module.exports.run = async (message, args, client, queue) => {
 			return message.channel.send(msg);
 		}
 	}
-	function play(guild, song) {
+	async function play(guild, song) {
 		const serverQueue = queue.get(guild.id);
 		if(!song) {
 			serverQueue.vChannel.leave();
@@ -114,7 +114,7 @@ module.exports.run = async (message, args, client, queue) => {
 			return;
 		}
 		// eslint-disable-next-line no-unused-vars
-		const dispatcher = serverQueue.connection
+		const dispatcher = await serverQueue.connection
 			.play(ytdl(song.url))
 			.on('finish', () =>{
 				serverQueue.songs.shift();
