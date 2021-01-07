@@ -40,7 +40,7 @@ module.exports.run = async (message, args, client, queue) => {
 	async function videoHandler(songInfo, message, vc, playlist = false) {
 		const serverQueue = queue.get(message.guild.id);
 		if(!args.length) {
-			if(!serverQueue) {
+			if(!serverQueue || serverQueue.connection.dispatcher == null) {
 				return message.channel.send('There is no music currently playing!');
 			}
 			if(!message.member.voice.channel) {
@@ -51,12 +51,9 @@ module.exports.run = async (message, args, client, queue) => {
 					return message.channel.send('The song is already playing!');
 				}
 				else {
-					serverQueue.connection.dispatcher.resume();
+					await serverQueue.connection.dispatcher.resume();
 					return message.channel.send('The song has been resumed!');
 				}
-			}
-			else if (serverQueue.connection.dispatcher == null) {
-				return message.channel.send('There is no music currently playing!');
 			}
 		}
 		const song = {
@@ -81,8 +78,8 @@ module.exports.run = async (message, args, client, queue) => {
 			try{
 				const connection = await queueConstructor.vChannel.join();
 				queueConstructor.connection = connection;
-				message.guild.me.voice.setSelfDeaf(true);
-				play(message.guild, queueConstructor.songs[0]);
+				await message.guild.me.voice.setSelfDeaf(true);
+				await play(message.guild, queueConstructor.songs[0]);
 			}
 			catch (err) {
 				console.error(err);
@@ -106,22 +103,21 @@ module.exports.run = async (message, args, client, queue) => {
 			return message.channel.send(msg);
 		}
 	}
-	function play(guild, song) {
+	async function play(guild, song) {
 		const serverQueue = queue.get(guild.id);
 		if(!song) {
-			serverQueue.vChannel.leave();
+			await serverQueue.vChannel.leave();
 			queue.delete(guild.id);
 			return;
 		}
+		const stream = ytdl(song.url, { highWaterMark: 1 << 25, filter: 'audioonly' });
 		// eslint-disable-next-line no-unused-vars
-		const dispatcher = setTimeout(() => {
-			serverQueue.connection.then()
-				.play(ytdl(song.url))
-				.on('finish', () =>{
-					serverQueue.songs.shift();
-					play(guild, serverQueue.songs[0]);
-				}, 2000);
-		});
+		serverQueue.connection
+			.play(stream)
+			.on('finish', () =>{
+				serverQueue.songs.shift();
+				play(guild, serverQueue.songs[0]);
+			});
 		const dur = `${parseInt(serverQueue.songs[0].vLength / 60)}:${serverQueue.songs[0].vLength - 60 * parseInt(serverQueue.songs[0].vLength / 60)}`;
 		const msg = new Discord.MessageEmbed()
 			.setTitle('Now Playing')
