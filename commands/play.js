@@ -111,7 +111,6 @@ module.exports.run = async (message, args, client, queue) => {
 			return;
 		}
 		const stream = ytdl(song.url, { highWaterMark: 1 << 25, filter: 'audioonly' });
-		// eslint-disable-next-line no-unused-vars
 		serverQueue.connection
 			.play(stream)
 			.on('finish', () =>{
