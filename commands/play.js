@@ -106,7 +106,7 @@ module.exports.run = async (message, args, client, queue) => {
 			return message.channel.send(msg);
 		}
 	}
-	async function play(guild, song) {
+	function play(guild, song) {
 		const serverQueue = queue.get(guild.id);
 		if(!song) {
 			serverQueue.vChannel.leave();
@@ -114,12 +114,14 @@ module.exports.run = async (message, args, client, queue) => {
 			return;
 		}
 		// eslint-disable-next-line no-unused-vars
-		const dispatcher = await serverQueue.connection
-			.play(ytdl(song.url))
-			.on('finish', () =>{
-				serverQueue.songs.shift();
-				play(guild, serverQueue.songs[0]);
-			});
+		const dispatcher = setTimeout(() => {
+			serverQueue.connection.then()
+				.play(ytdl(song.url))
+				.on('finish', () =>{
+					serverQueue.songs.shift();
+					play(guild, serverQueue.songs[0]);
+				}, 2000);
+		});
 		const dur = `${parseInt(serverQueue.songs[0].vLength / 60)}:${serverQueue.songs[0].vLength - 60 * parseInt(serverQueue.songs[0].vLength / 60)}`;
 		const msg = new Discord.MessageEmbed()
 			.setTitle('Now Playing')
