@@ -21,7 +21,7 @@ module.exports = client => {
 					return;
 				}
 				const hours = Math.abs(n - g) / 36e5;
-				if (hours >= 4) {
+				if (hours >= 6) {
 					await mongo().then(async mongoose => {
 						try {
 							console.log('Connected to MongoDB');
@@ -41,12 +41,7 @@ module.exports = client => {
 											upsert: true,
 										});
 										console.log(`${newPresence.user.username} has been playing ${act.name} for ${Math.round(hours)} hours.`);
-										if (newPresence.member.nickname == null || newPresence.member.nickname == undefined) {
-											return client.channels.cache.get(general).send(`${newPresence.user.username} has been playing ${act.name} for ${Math.round((hours) * 100) / 100} hours.`);
-										}
-										else {
-											return client.channels.cache.get(general).send(`${newPresence.user.nickname} has been playing ${act.name} for ${Math.round((hours) * 100) / 100} hours.`);
-										}
+										return client.channels.cache.get(general).send(`${newPresence.user.username} has been playing ${act.name} for ${Math.round((hours) * 100) / 100} hours.`);
 									}
 								}
 								else {
