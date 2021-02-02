@@ -21,6 +21,7 @@ module.exports.run = async (message, args) => {
 		const waitUntilEnd = (currentPlayer) => {
 			return new Promise((resolve) => {
 				currentPlayer.on('end', () => resolve());
+				message.delete();
 			});
 		};
 
@@ -30,7 +31,6 @@ module.exports.run = async (message, args) => {
 			audioPlayer = connection.play(audioUrl);
 			await waitUntilEnd(audioPlayer);
 			connection.dispatcher.end();
-			message.delete();
 		}
 	});
 };
