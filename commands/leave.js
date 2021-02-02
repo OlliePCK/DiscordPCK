@@ -6,7 +6,9 @@ module.exports.run = (message) => {
 		return;
 	}
 	console.log('Left voice channel');
-	return message.member.voice.channel.leave();
+	message.member.voice.channel.leave();
+	return message.delete();
+
 };
 
 module.exports.config = {
