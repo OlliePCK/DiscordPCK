@@ -22,6 +22,7 @@
     "mongodb": "^3.6.3",
     "mongoose": "^5.11.9",
     "opusscript": "^0.0.7",
+    "request": "^2.88.2",
     "ytdl-core": "^4.4.1",
     "ytpl": "^2.0.4",
     "ytsearcher": "^1.2.3"
