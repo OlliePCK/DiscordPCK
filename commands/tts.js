@@ -29,6 +29,7 @@ module.exports.run = async (message, args) => {
 			if (!connection || ttsUrl === undefined) break;
 			audioPlayer = connection.play(audioUrl);
 			await waitUntilEnd(audioPlayer);
+			message.delete();
 			connection.dispatcher.end();
 		}
 	});
