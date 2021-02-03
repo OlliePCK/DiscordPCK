@@ -11,6 +11,7 @@ const liveNoti = require('./presence_functions/live-noti');
 const exposeSchema = require('./schemas/expose-schema');
 
 const queue = new Map();
+const ttsqueue = new Map();
 
 const client = new Discord.Client();
 client.commands = new Discord.Collection();
@@ -77,7 +78,7 @@ client.on('message', async (message) => {
 	if (!command) {return;}
 
 	try {
-		command.run(message, args, client, queue);
+		command.run(message, args, client, queue, ttsqueue);
 	}
 	catch (err) {
 		console.error(err);

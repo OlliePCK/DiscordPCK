@@ -1,4 +1,4 @@
-module.exports.run = (message, args, client, queue, searcher) => {
+module.exports.run = (message, args) => {
 	if (!args.length) {
 		return message.channel.send(`You didn't provide any arguments, ${message.author}!`);
 	}
