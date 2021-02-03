@@ -41,6 +41,9 @@ module.exports.run = async (message, args, client, queue, ttsqueue) => {
 	}
 	message.delete();
 	async function play(guild, tts) {
+		if (!tts) {
+			return;
+		}
 		const serverttsqueue = ttsqueue.get(guild.id);
 		serverttsqueue.connection
 			.play(tts)
