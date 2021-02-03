@@ -42,11 +42,6 @@ module.exports.run = async (message, args, client, queue, ttsqueue) => {
 	message.delete();
 	async function play(guild, tts) {
 		const serverttsqueue = ttsqueue.get(guild.id);
-		if(!tts) {
-			await serverttsqueue.vChannel.leave();
-			ttsqueue.delete(guild.id);
-			return;
-		}
 		serverttsqueue.connection
 			.play(tts)
 			.on('finish', () =>{
