@@ -13,6 +13,5 @@ module.exports.run = (message, args, client, queue, ttsqueue) => {
 
 module.exports.config = {
 	name: 'stoptts',
-	aliases: ['l'],
 	desc: 'Stop the TTS bot',
 };
